@@ -3,6 +3,8 @@ very small I2C brushed motor controller
 
 Transcribed text from my german(!) video:https://youtu.be/MuoPkisycU4
 
+![Screenshot](images/IMG_E0511.JPG)
+
 ---
 
 It is so far, last time I designed a board that should run a motor via I2C. Two days ago the board finally arrived and I have to say I am thrilled about the result, but see even here is a small UNPack video that should show you how the boards arrived and in what condition I saw them the first time.
