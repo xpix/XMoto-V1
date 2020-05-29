@@ -1,7 +1,8 @@
 # XMoto
 very small I2C brushed motor controller
 
-Transcribed text from my german(!) video:https://youtu.be/MuoPkisycU4
+Transcribed text from my german(!) video:
+https://youtu.be/MuoPkisycU4
 
 ![Screenshot](images/IMG_E0511.JPG)
 
