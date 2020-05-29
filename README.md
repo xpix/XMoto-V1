@@ -54,5 +54,24 @@ Prepare
 For this we need three cables first of course we have to connect to ground, the second is connected to 5 Volt plus from the Arduino nano and the third is the UDPI cable which is connected directly to the reset port of the Attiny's on the back of the board.
 
 
-So we take out the soldering iron and off we go we need a 4 pin connection on the back of the board plus a connection to the UDPI port point, that's it and we can install the software on our computer according to the instructions. And what can I tell you, it worked right away. It was a nice feeling to see the LED lights and to know that the board works in its basic features. I was very relieved because to repair something on this board is a little bit more difficult, because the components are so small that with my 53 years there I have a pro
+So we take out the soldering iron and off we go we need a 4-pin connection on the back of the board plus a connection to the UDPI port point, that's it and we can install the appropriate software on our computer according to the instructions. And what can I tell you, it worked right away. It was a nice feeling to see the LED lights and to know that the board works in its basic features. I was very relieved because to repair something on this board is a little bit more difficult, because the components are so small that with my 53 years I would have problems to lay any line and so on but we were lucky, everything works and we can continue now. 
 
+Serial Test
+To be able to debug the code later on, it is very important to me that I can test the serial port of the MCU, so in the blink sketch just write some serial output into it and connect the RX and TX lines with an extra UART adapter. Here I already noticed the first mistake, I labeled the lines for RX and TX the wrong way round, this is actually done to show the user where to connect his RX and TX. Since these are crossed, that was unhandy for me, since I needed five minutes to find out that I switched RX and TX. This test also worked immediately and I could see the text "blink" in a serial console. 
+
+ Next we should test the function of the motor chip and the hall sensor, I have come up with this little code, which can be found in my GIT repository, the link is in the video description. 
+Engine test
+https://www.ti.com/lit/ds/symlink/drv8837.pdf
+So let's look at the motor driver DRV 8837, so first we look at the datasheet and find out that we have two inputs that are controlled by PWM. If one input is Hi, the motor turns in one direction, the other Hi then turns in the other direction, the PWM sets the speed of the motor over the duty cycle. So we will add the code so that we set a PWM signal first on one pin and then on the other PIN. The motor once should move in one direction and then in the other direction. We also add some debugging to see what's happening with the motor. 
+Hall sensor
+The hall sensor on our board is a chinese model, and there is only a chinese datasheet, it's the CC 6201, which is only used as a switch either low or high, and so we can test the hi sensor with this simple code, so that if a magnet is passed by the sensor ... our LED lights up, that should be enough to test this sensor. 
+https://draeger-it.blog/arduino-lektion-18-magnetischer-hall-sensor/?cn-reloaded=1
+Conclusion 
+In general I am very satisfied, also with my work on the PCB ... but what JLCPCB has sent me is a straight "one" with an asterisk. Oh, I forgot about the delivery times, the production took a week and the delivery took only 2 days. Here is the protocol that JLCPCB provides you with. Also nice, you can see small videos from the production, how your boards are made.
+
+This gave me an idea, you could take a picture of the board after production and send it to the customer via mail, so he can check for errors and doesn't have to wait for the board. I wrote it in their forum, let's see if something happens.
+
+Next time I will present XMoto with software and on the Marlin Board, but that will take 2 weeks ... because of private plans. But follow my communitychannel on YouTube, there I write from time to time how far I am and when the next video is coming.
+
+Take care and stay healthy
+Your Frank
