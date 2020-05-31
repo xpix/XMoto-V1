@@ -4,6 +4,10 @@ https://github.com/NikodemBartnik/EncoderMotorDriver/blob/master/EncoderMotorDri
 
 Todo:
 - commands to control motor via I2C
+  - forward 3sec with full speed
+    * send via I2C "s255"
+    * send via I2C "t3000"
+
   - forward 1000 steps with full speed
     * send via I2C "s255"
     * send via I2C "f1000"
