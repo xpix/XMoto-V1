@@ -1,0 +1,19 @@
+Möglicher Code für den I2C motor driver:
+https://github.com/NikodemBartnik/EncoderMotorDriver/blob/master/EncoderMotorDriver/EncoderMotorDriver.ino
+
+
+Todo:
+- commands to control motor via I2C
+  - forward 3sec with full speed
+    * send via I2C "s255"
+    * send via I2C "t3000"
+
+  - forward 1000 steps with full speed
+    * send via I2C "s255"
+    * send via I2C "f1000"
+  - reverse 1000 steps with half speed
+    * send via I2C "s130"
+    * send via I2C "r1000"
+  - stop
+    * send via I2C "stop"
+
