@@ -21,9 +21,10 @@ class drv8837 {
     drv8837(uint8_t, uint8_t, uint8_t); // constructor that sets pins for board - AIN1/2 and Hall sensor
     void setDirection(bool);            // set motor direction
     void setSpeed(int);                 // set motor speeds
-    void setTTR(int);                   // set time to revolution
+    void setTTR(int);                   // set steps to revolution
+    int  TTR();                         // get steps to revolution
     void steps(long int);               // rotate motor with x steps
-    void deg(int);                  // rotate motor in degrees
+    void deg(int);                      // rotate motor in degrees
     void time(int);                     // rotate motor for milliseconds
     long int drv8837::count();          // get counter value
 };

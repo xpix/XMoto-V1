@@ -4,7 +4,7 @@
 String sdata="";  // Initialised to nothing.
 
 drv8837 motor(12, 13, 19);
-int timetorevolution = 3000; // time for one revolution
+int stepsToRev = (6 * 298); // time for one revolution 6 steps * 298 (gearbox 1:298)
 
 void setup() {
    //I2C-adress: Slave 5 
@@ -23,11 +23,11 @@ void setup() {
    Serial.println("t x     - rotate for X ms");
    Serial.println("s x     - roate x steps");
    Serial.println("r x     - roatate degrees");
-   Serial.println("w x     - set time to revolution in ms");
+   Serial.println("w x     - set steps to revolution in ms");
 
 
    motor.setSpeed(255); // set to full speed
-   motor.setTTR(timetorevolution); // set TTR
+   motor.setTTR(stepsToRev); // set TTR
 }
 
 void loop() {
@@ -88,9 +88,12 @@ void callCommand(){
       Serial.println(val);
       break;
    case 'w':
-      Serial.println("Set time to rev");
+      Serial.println("Set/Get steps to rev");
       val = getValue(sdata);
-      motor.setTTR(val);
+      if(val > 0){
+        motor.setTTR(val);
+      }
+      val = motor.TTR();
       Serial.print("TTR Val ");
       Serial.println(val);
       break;
