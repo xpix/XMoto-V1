@@ -1,10 +1,15 @@
 #include "drv8837.h"
 #include <Wire.h>
+#include <PIDController.h>
+
 
 String sdata="";  // Initialised to nothing.
 
+PIDController pos_pid; 
+
 drv8837 motor(12, 13, 19);
 int stepsToRev = (6 * 298); // time for one revolution 6 steps * 298 (gearbox 1:298)
+int oldspeed;
 
 void setup() {
    //I2C-adress: Slave 5 
@@ -25,10 +30,17 @@ void setup() {
    Serial.println("r x     - roatate degrees");
    Serial.println("w x     - set steps to revolution in ms");
 
-
+   pos_pid.begin();    
+   pos_pid.tune(10, 0, 2000);    
+   pos_pid.limit(-255, 255);
+  
    motor.setSpeed(255); // set to full speed
-   motor.setTTR(stepsToRev); // set TTR
+   oldspeed = motor.speed();
+
+   motor.setSTR(stepsToRev); // set STR
 }
+
+int wert = 0;
 
 void loop() {
 
@@ -42,6 +54,16 @@ void loop() {
          callCommand();
       } // if \r
    }  // available
+
+   // PID Handling to arrive on specific position
+   // you can tune this values above via pid.tune()
+   int pos = motor.count();         // get position
+   wert = pos_pid.compute(pos);     // compute speed via position
+   if(wert > 1){                    // defined value ..
+    motor.setSpeed(wert);           // set pwm for speed
+   }else{                           
+    motor.setSpeed(oldspeed);       // set old speed value
+   }
 }
 
 // interprete first char in string as command 
@@ -65,7 +87,11 @@ void callCommand(){
    case 'p':
       Serial.println("Set speed");
       val = getValue(sdata);
-      motor.setSpeed(val);
+      if(val > 0){
+        motor.setSpeed(val);
+        oldspeed=motor.speed();
+      }
+      val = motor.speed();
       Serial.print("Val: ");
       Serial.println(val);
       break;
@@ -77,6 +103,7 @@ void callCommand(){
       break;
    case 's':
       val = getValue(sdata);
+      pos_pid.setpoint(val);
       motor.steps(val);
       Serial.print("Steps Val ");
       Serial.println(val);
@@ -91,16 +118,22 @@ void callCommand(){
       Serial.println("Set/Get steps to rev");
       val = getValue(sdata);
       if(val > 0){
-        motor.setTTR(val);
+        motor.setSTR(val);
       }
-      val = motor.TTR();
-      Serial.print("TTR Val ");
+      val = motor.STR();
+      Serial.print("STR Val ");
       Serial.println(val);
       break;
    default: Serial.println(sdata);
   } // switch
   
   sdata = ""; // Clear the string ready for the next command.
+
+  // check flag is motor run and braked
+  if(motor.braked()){
+      Serial.println("Stopped");
+  }
+
 }
 
 // callback for I2C receive bytes

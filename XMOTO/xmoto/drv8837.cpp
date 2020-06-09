@@ -10,7 +10,7 @@
 uint8_t _AIN1_pin, _AIN2_pin, _HALL_pin; // pwm pins
 int _PWM, _stepsToRev; //pwm value, ttr
 volatile int _counter; // counter for hall sensor
-bool _direction;
+bool _direction, _braked;
 long int _steps;
 
 // Constructor that sets pins for board - 
@@ -33,8 +33,8 @@ drv8837::drv8837(uint8_t AIN1, uint8_t AIN2, uint8_t HALL) {
    pinMode(_AIN2_pin, OUTPUT);
    _PWM = 0;
    _counter = 0;
-  pinMode(_HALL_pin, INPUT_PULLUP);
-  PORTA.PIN2CTRL|=0x02; //ISC=2 trigger rising - uses |= so current value of 
+   pinMode(_HALL_pin, INPUT_PULLUP);
+   PORTA.PIN2CTRL|=0x02; //ISC=2 trigger rising - uses |= so current value of 
 }
 
 ISR(PORTA_PORT_vect) {
@@ -42,8 +42,11 @@ ISR(PORTA_PORT_vect) {
   PORTA.INTFLAGS=flags; //clear flags
     _counter++;
     if(_steps && _counter >= _steps){
-      analogWrite(_AIN1_pin, 0);
-      analogWrite(_AIN2_pin, 0);
+      analogWrite(_AIN1_pin, 255);
+      analogWrite(_AIN2_pin, 255);
+    }
+    if(_steps && _counter >= _steps){
+      _braked = true;
     }
 }
 
@@ -71,10 +74,8 @@ void drv8837::deg(int degrees) {
 
 //rotate motor for x steps
 void drv8837::steps(long int steps) {
-  noInterrupts ();
   _counter = 0;
   _steps = steps;
-  interrupts ();
   if( _direction == FORWARD ){
     _forward();
   } else {
@@ -105,15 +106,23 @@ void drv8837::setDirection(bool direction) { //set motor direction
   _direction = direction;
 }
 
-void drv8837::setTTR(int steps) { //set ttr
+void drv8837::setSTR(int steps) { //set ttr
   _stepsToRev = steps;
 }
 
-int drv8837::TTR() { //set ttr
+int drv8837::STR() { //set ttr
   return _stepsToRev;
 }
 
 void drv8837::setSpeed(int speed) { //set motor speed (0-255)
    if (_check_valid())
       _PWM = speed;
+}
+
+int drv8837::speed() { //get motor speed
+      return _PWM;
+}
+
+bool drv8837::braked() { //get motor speed
+      return _braked;
 }
