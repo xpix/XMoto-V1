@@ -23,11 +23,15 @@ class drv8837 {
     void setSpeed(int);                 // set motor speeds
     int speed();                        // get speed
 
-    void setSTR(int);                   // set steps to revolution
-    int  STR();                         // get steps to revolution
+    void setSTM(int);                   // set steps per mm
+    int  STM();                         // get steps per mm
+
+    void setSTR(int);                   // set steps per revolution
+    int  STR();                         // get steps per revolution
 
     void steps(long int);               // rotate motor with x steps
     void deg(int);                      // rotate motor in degrees
+    void mov(float);                    // rotate motor in millimeter
     void time(int);                     // rotate motor for milliseconds
     long int count();                   // get counter value
 

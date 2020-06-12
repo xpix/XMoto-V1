@@ -8,7 +8,7 @@
  */
 
 uint8_t _AIN1_pin, _AIN2_pin, _HALL_pin; // pwm pins
-int _PWM, _stepsToRev; //pwm value, ttr
+int _PWM, _stepsToRev, _stepsToMM; //pwm value, ttr
 volatile int _counter; // counter for hall sensor
 bool _direction, _braked;
 long int _steps;
@@ -44,9 +44,9 @@ ISR(PORTA_PORT_vect) {
     if(_steps && _counter >= _steps){
       analogWrite(_AIN1_pin, 255);
       analogWrite(_AIN2_pin, 255);
-    }
-    if(_steps && _counter >= _steps){
       _braked = true;
+    }else{
+      _braked = false;
     }
 }
 
@@ -68,6 +68,12 @@ void drv8837::time(int zeit) {
 //rotate motor in degrees
 void drv8837::deg(int degrees) {
   float runsteps = ((_stepsToRev / 360.0) * degrees);
+  drv8837::steps(round(runsteps));
+}
+
+//move motor in millimeter
+void drv8837::mov(float mm) {
+  float runsteps = (_stepsToMM * mm);
   drv8837::steps(round(runsteps));
 }
 
@@ -112,6 +118,14 @@ void drv8837::setSTR(int steps) { //set ttr
 
 int drv8837::STR() { //set ttr
   return _stepsToRev;
+}
+
+void drv8837::setSTM(int steps) { //set ttr
+  _stepsToMM = steps;
+}
+
+int drv8837::STM() { //set steps/mm
+  return _stepsToMM;
 }
 
 void drv8837::setSpeed(int speed) { //set motor speed (0-255)
