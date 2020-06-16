@@ -17,8 +17,11 @@ class drv8837 {
     
   public:
     drv8837();                          // default constructor
-    drv8837(uint8_t, uint8_t);          // constructor that sets pins for board - AIN1 & AIN2
-    drv8837(uint8_t, uint8_t, uint8_t); // constructor that sets pins for board - AIN1/2 and Hall sensor
+    drv8837(uint8_t, uint8_t, uint8_t); // constructor that sets pins for board - AIN1 & AIN2
+
+    // constructor that sets pins for board - AIN1/2, Hall sensor and LED
+    drv8837(uint8_t, uint8_t, uint8_t, uint8_t);
+
     void setDirection(bool);            // set motor direction
     void setSpeed(int);                 // set motor speeds
     int speed();                        // get speed
@@ -29,6 +32,7 @@ class drv8837 {
     void setSTR(int);                   // set steps per revolution
     int  STR();                         // get steps per revolution
 
+    void stop();                        // stop motor and clear all data
     void steps(long int);               // rotate motor with x steps
     void deg(int);                      // rotate motor in degrees
     void mov(float);                    // rotate motor in millimeter

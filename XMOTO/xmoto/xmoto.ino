@@ -2,13 +2,16 @@
 #include <Wire.h>
 #include <PIDController.h>
 
-#define SLAVE 9
+#define MASTER 8   // I2C Adress from Master 
+#define SLAVE  9   // I2C Adress from this xmoto device
 
-String sdata="";  // Initialised to nothing.
+
+String sdata="";     // Initialised to nothing.
+String toMASTER="";  // Initialised to nothing.
 
 PIDController pos_pid; 
 
-drv8837 motor(12, 13, 19);
+drv8837 motor(12, 13, 19, 4); // pins: AIN1, AIN2, HALL, LED
 int stepsToRev = (6 * 298); // time for one revolution 6 steps * 298 (gearbox 1:298)
 int oldspeed;
 
@@ -67,11 +70,10 @@ void loop() {
       motor.setSpeed(oldspeed);       // set old speed value
    }
 
-   /*
-    * TODO: interrupt for breaked, print out if breaked set to true
-    */
-
-   
+   if(toMASTER.length() >= 1){
+      WireSend(MASTER, toMASTER);
+      toMASTER="";
+   }
 }
 
 // interprete first char in string as command 
@@ -85,7 +87,20 @@ int callCommand(){
   switch( sdata.charAt(0) ) {
    case 'c':
       Serial.print("Counter ");
+      val = motor.count();
+      Serial.println(val);
+      break;
+   case 'q':
+      Serial.print("STOP ");
+      motor.stop();
       Serial.println(motor.count());
+      break;
+   case 't':
+      Serial.println("Set time");
+      val = getValue(sdata);
+      motor.time(val);
+      Serial.print("Val: ");
+      Serial.println(val);
       break;
    case 's':
       val = getValue(sdata);
@@ -108,13 +123,6 @@ int callCommand(){
       break;
 
    // CONFIGURATION ---------------------------
-   case 'T':
-      Serial.println("Set time");
-      val = getValue(sdata);
-      motor.time(val);
-      Serial.print("Val: ");
-      Serial.println(val);
-      break;
    case 'P':
       Serial.println("Set speed");
       val = getValue(sdata);
@@ -190,8 +198,21 @@ void receiveEvent(int howMany){
   Serial.print("I2C: ");
   Serial.println(sdata);
   
-  callCommand();
+  int val = callCommand();
+  toMASTER = String(val, DEC);
+  sdata="";
 }
+
+void WireSend(byte adress, String txt) {
+  Serial.println("Send via I2C: " + txt);
+  char buffer[8];
+  txt.toCharArray(buffer, 8);
+  Wire.beginTransmission(adress);
+  Wire.write(buffer);
+  Wire.endTransmission();
+  delay(50);
+}
+
 
 void menu(){
    Serial.println("Command's ----------");
@@ -200,6 +221,7 @@ void menu(){
    Serial.println("s x     - roate x steps");
    Serial.println("r x     - rotate degrees");
    Serial.println("m x     - move x mm");
+   Serial.println("q x     - stop motor");
    Serial.println("Config --------------");
    Serial.println("P[0-254]- set speed");
    Serial.println("D[0|1]  - set direction");
