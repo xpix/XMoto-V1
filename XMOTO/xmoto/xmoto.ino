@@ -70,7 +70,8 @@ void loop() {
       motor.setSpeed(oldspeed);       // set old speed value
    }
 
-   if(toMASTER.length() >= 1){
+   // If motor stopped and toMASTER then send back
+   if(motor.braked() && toMASTER.length() >= 1){
       WireSend(MASTER, toMASTER);
       toMASTER="";
    }
