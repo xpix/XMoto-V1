@@ -1,4 +1,4 @@
-#include "drv8837.h"
+#include "xmoto.h"
 #include <PIDController.h>
 
 // For STM32F04 we can only switch on I2C or Serial, 
@@ -31,8 +31,8 @@ String toMASTER="";  // Initialised to nothing.
 
 PIDController pos_pid; 
 
-//drv8837 motor(12, 13, 19, 4); // ATTINY pins: AIN1, AIN2, HALL, LED
-drv8837 motor(A0, A1, LED); // STM32 pins: AIN1, AIN2, HALL, LED
+//xmoto motor(12, 13, 19, 4); // ATTINY pins: AIN1, AIN2, HALL, LED
+xmoto motor(A0, A1, LED); // STM32 pins: AIN1, AIN2, HALL, LED
 int stepsToRev = (3 * 298); // time for one revolution 3 steps * 298 (gearbox 1:298)
 int oldspeed;
 volatile unsigned int hcounter = 0;

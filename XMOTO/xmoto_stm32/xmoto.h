@@ -1,12 +1,12 @@
-#ifndef DRV8837_H
-#define DRV8837_H
+#ifndef XMOTO_H
+#define XMOTO_H
 
 #include <Arduino.h>
 
 #define FORWARD 0
 #define BACKWARD 1
 
-class drv8837 {
+class xmoto {
   
   private:
     static void _stop();         //stop motor 
@@ -15,8 +15,8 @@ class drv8837 {
     bool _check_valid();  //check that configuration is set before doing anything
     
   public:
-    drv8837();                          // default constructor
-    drv8837(uint8_t, uint8_t, uint8_t); // constructor that sets pins for board - AIN1 & AIN2
+    xmoto();                          // default constructor
+    xmoto(uint8_t, uint8_t, uint8_t); // constructor that sets pins for board - AIN1 & AIN2
 
     void setDirection(bool);            // set motor direction
     void setSpeed(int);                 // set motor speeds
