@@ -5,6 +5,8 @@
 // otherwise too much FLASH is used
 // Hardwareserial the same, 
 // use instead SoftwareSerial with less FLASH consumption
+// set serial to 9600 and just CR, commands w/o space i.e. s100
+
 #define UART       // Switch serial ON
 //#define I2C        // Switch I2C ON
 
@@ -23,6 +25,7 @@
 
 #if defined(UART)
 #include <SoftwareSerial.h>
+//SoftwareSerial Serial(PA10, PA9); // RX, TX on I2C pins
 SoftwareSerial Serial(PA3, PA2); // RX, TX
 #endif
 
@@ -38,17 +41,21 @@ int oldspeed;
 volatile unsigned int hcounter = 0;
 
 // PID Standard values
-int kP = 10;
-int kI = 0;
-int kD = 2000;
+float kP = 5;
+float kI = 1;
+float kD = 0.01;
 
 void setup() {
+   digitalWrite(LED, HIGH);   // turn the LED on (HIGH is the voltage level)
+   delay(500);
+   digitalWrite(LED, LOW);    // turn the LED off by making the voltage LOW
+
    Serial.begin(9600);
    Serial.println("Welcome");
 
    menu();
    pos_pid.begin();    
-   pos_pid.limit(0, 255);
+   pos_pid.limit(5, 254);
    pos_pid.tune(kP, kI, kD);
   
    motor.setSpeed(255); // set to full speed
@@ -58,7 +65,7 @@ void setup() {
 
    // STM32 Interrupt
    pinMode(HALL, INPUT_PULLUP);
-   attachInterrupt(HALL, hcount, FALLING); 
+   attachInterrupt(digitalPinToInterrupt(HALL), hcount, FALLING); 
 }
 
 
@@ -83,7 +90,7 @@ void loop() {
    // you can tune this values above via pid.tune()
    int pos = motor.count();         // get position
    wert = pos_pid.compute(pos);     // compute speed via position
-   if(wert > 1 && wert < 255){                    // defined value ..
+   if(wert > 5 && wert < 255){                    // defined value ..
       motor.setSpeed(wert);           // set pwm for speed
    }else{
       pos=0;
@@ -118,8 +125,7 @@ int callCommand(){
   switch( sdata.charAt(0) ) {
    case 'c':
       Serial.print("Counter ");
-      val = motor.count();
-      Serial.println(val);
+      Serial.println(motor.count());
       break;
    case 'q':
       Serial.print("STOP ");
@@ -137,7 +143,7 @@ int callCommand(){
       val = getValue(sdata, 1);
       pos_pid.setpoint(val);
       motor.steps(val);
-      Serial.print(F("Steps Val "));
+      Serial.print(F("Steps: "));
       Serial.println(val);
       break;
    case 'r':

@@ -33,7 +33,10 @@ class xmoto {
     void deg(int);                      // rotate motor in degrees
     void mov(float);                    // rotate motor in millimeter
     void time(int);                     // rotate motor for milliseconds
+
     long int count();                   // get counter value
+    int  cerror();                      // get error value
+
     void inc_count();                   // set counter external
 
     bool braked();                      // get status of motor after run

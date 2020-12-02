@@ -1,12 +1,5 @@
 #include "xmoto.h"
 
-/*
-
-
-
-
- */
-
 uint8_t _PWM, _AIN1_pin, _AIN2_pin, _LED_pin; // pwm pins
 int _stepsToRev, _stepsToMM; //pwm value, ttr
 volatile int _counter; // counter for hall sensor
@@ -23,8 +16,10 @@ xmoto::xmoto(uint8_t AIN1, uint8_t AIN2, uint8_t LED) {
    pinMode(_AIN1_pin, OUTPUT);
    pinMode(_AIN2_pin, OUTPUT);
    pinMode(_LED_pin, OUTPUT);
+   analogWriteFrequency(50);
    _PWM = 0;
    _counter = 0;
+   _braked = false;
 }
 
 void xmoto::tick() {
@@ -41,13 +36,17 @@ void xmoto::inc_count() {
     analogWrite(_AIN2_pin, 255);
     _braked = true;
     digitalWrite(_LED_pin, LOW); // LED set on or off
-  }else{
+}else{
     _braked = false;
   }
 }
 
 long int xmoto::count() {
   return _counter;
+}
+
+int xmoto::cerror() {
+  return abs(_counter - _steps);
 }
 
 //rotate motor for milliseconds
@@ -90,7 +89,6 @@ void xmoto::mov(float mm) {
 
 //rotate motor for x steps
 void xmoto::steps(long int steps) {
-   _counter = 0;
    _steps = steps;
    if( _direction == FORWARD ){
      _forward();
@@ -100,24 +98,27 @@ void xmoto::steps(long int steps) {
 }
 
 void xmoto::stop() {
-   digitalWrite(_LED_pin, LOW); // LED set on or off
    analogWrite(_AIN1_pin, 255);
    analogWrite(_AIN2_pin, 255);
-   delay(100); // TODO non blocking delay
-   _counter = 0;
+   digitalWrite(_LED_pin, LOW); // LED set on or off
+   delay(10); // TODO non blocking delay
    _TIMETOSTOP = 0;
 }
 
 void xmoto::_forward() {
-   digitalWrite(_LED_pin, HIGH); // LED set on or off
+   _counter = 0;
    analogWrite(_AIN1_pin, _PWM);
    analogWrite(_AIN2_pin, 1);
+   _braked = false;
+   digitalWrite(_LED_pin, HIGH); // LED set on or off
 }
 
 void xmoto::_backward() {
-   digitalWrite(_LED_pin, HIGH); // LED set on or off
+   _counter = 0;
    analogWrite(_AIN1_pin, 1);
    analogWrite(_AIN2_pin, _PWM);
+   _braked = false;
+   digitalWrite(_LED_pin, HIGH); // LED set on or off
 }
 
 bool xmoto::_check_valid() { //check that configuration is set before doing anything
@@ -145,8 +146,7 @@ int xmoto::STM() { //set steps/mm
 }
 
 void xmoto::setSpeed(int speed) { //set motor speed (0-255)
-   if (_check_valid())
-      _PWM = speed;
+  _PWM = speed;
 }
 
 int xmoto::speed() { //get motor speed
